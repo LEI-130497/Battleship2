@@ -150,11 +150,11 @@ public class Game implements IGame
 	public static final int BOARD_SIZE = 10;
 	public static final int NUMBER_SHOTS = 3;
 
-	private static final char EMPTY_MARKER = '.';
-	private static final char SHIP_MARKER = '#';
-	private static final char SHOT_SHIP_MARKER = '*';
-	private static final char SHOT_WATER_MARKER = 'o';
-	private static final char SHIP_ADJACENT_MARKER = '-';
+	public static final char EMPTY_MARKER = '.';
+	public static final char SHIP_MARKER = '#';
+	public static final char SHOT_SHIP_MARKER = '*';
+	public static final char SHOT_WATER_MARKER = 'o';
+	public static final char SHIP_ADJACENT_MARKER = '-';
 
 	//------------------------------------------------------------------
 	private final IFleet myFleet;
