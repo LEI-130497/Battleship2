@@ -109,23 +109,19 @@ public class Game implements IGame
 	 * @param shots a list of shot positions to be serialized. Each position is represented
 	 *              by an implementation of the {@code IPosition} interface. The list must
 	 *              not be null.
-	 * @return a formatted JSON string containing the shot positions. Each shot includes
-	 *         its classic row and column.
+	 * @return a formatted JSON string containing the shot positions.
 	 * @throws RuntimeException if an error occurs during JSON serialization.
 	 */
 	public static String jsonShots(List<IPosition> shots) {
 
 		assert shots != null;
 
-		// Serializar os tiros gerados em JSON usando a biblioteca Jackson
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-		// 1. Create a simplified list containing only the desired data
 		List<Map<String, Object>> simplifiedShots = new ArrayList<>();
 		for (IPosition shot : shots) {
 			Map<String, Object> simplePos = new LinkedHashMap<>();
-			// We use getClassicRow() and getClassicColumn() based on your current JSON output
 			simplePos.put("row", String.valueOf(shot.getClassicRow()));
 			simplePos.put("column", shot.getClassicColumn());
 			simplifiedShots.add(simplePos);
@@ -133,7 +129,6 @@ public class Game implements IGame
 
 		String jsonString = null;
 		try {
-			// 2. Serialize the simplified list instead of the raw 'shots' list
 			jsonString = objectMapper.writeValueAsString(simplifiedShots);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Erro ao serializar o JSON", e);
@@ -142,7 +137,6 @@ public class Game implements IGame
 		System.out.println(jsonString);
 		System.out.println();
 
-		// Retornar o JSON
 		return jsonString;
 	}
 
@@ -162,6 +156,8 @@ public class Game implements IGame
 
 	private final IFleet alienFleet;
 	private final List<IMove> myMoves;
+
+	private final SoundManager soundManager;
 
 	private Integer countInvalidShots;
 	private Integer countRepeatedShots;
@@ -184,6 +180,8 @@ public class Game implements IGame
 		this.countRepeatedShots = 0;
 		this.countHits = 0;
 		this.countSinks = 0;
+
+		this.soundManager = new SoundManager();
 	}
 
 	@Override
@@ -221,7 +219,6 @@ public class Game implements IGame
 	 */
 	public String randomEnemyFire() {
 
-		// Criar uma instância de Random com uma seed baseada no timestamp atual
 		Random random = new Random(System.currentTimeMillis());
 
 		Set<IPosition> usablePositions = new HashSet<IPosition>();
@@ -234,11 +231,9 @@ public class Game implements IGame
 
 		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
 
-		// Criar lista para armazenar os tiros
 		List<IPosition> shots = new ArrayList<IPosition>();
 
 		System.out.println();
-		// Gerar coordenadas únicas até atingir o número definido por NUMBER_SHOTS
 
 		IPosition newShot = null;
 		if (candidateShots.size() >= Game.NUMBER_SHOTS)
@@ -287,16 +282,13 @@ public class Game implements IGame
 
 		String input = in.nextLine().trim();
 
-		// Criar lista para armazenar os tiros
 		List<IPosition> shots = new ArrayList<>();
 
 		Scanner inputScanner = new Scanner(input);
 		while (shots.size() < NUMBER_SHOTS && inputScanner.hasNext()) {
-			// Lê a próxima parte e constrói uma posição
 			String token = inputScanner.next();
 
 			if (token.matches("[A-Za-z]")) {
-				// Caso seja somente uma coluna ("A", "B", etc.), esperar o próximo número
 				if (inputScanner.hasNextInt()) {
 					int row = inputScanner.nextInt();
 					shots.add(new Position(token.toUpperCase().charAt(0), row));
@@ -304,7 +296,6 @@ public class Game implements IGame
 					throw new IllegalArgumentException("Posição incompleta! A coluna '" + token + "' não é seguida por uma linha.");
 				}
 			} else {
-				// Caso o token já contenha a coluna e a linha juntas (ex.: "A3")
 				Scanner singleScanner = new Scanner(token);
 				shots.add(Tasks.readClassicPosition(singleScanner));
 			}
@@ -362,10 +353,9 @@ public class Game implements IGame
 	 * repeated shots, hits, misses, and sinking a ship. The method updates the necessary counters
 	 * for invalid shots, repeated shots, hits, and sunk ships.
 	 *
-	 * @param pos the position to fire the shot at; must be valid and within the game board boundaries.
+	 * @param pos the position to fire at; must be inside the game board.
 	 * @param isRepeated true if the shot is marked as a repeat attempt, false otherwise.
-	 * @return a ShotResult object containing the result of the shot, including whether the shot was
-	 *         valid, repeated, a hit, and whether a ship was sunk.
+	 * @return a ShotResult object containing the result of the shot.
 	 */
 	public ShotResult fireSingleShot(IPosition pos, boolean isRepeated) {
 
@@ -381,16 +371,26 @@ public class Game implements IGame
 			return new ShotResult(true, true, null, false);
 		}
 
+		soundManager.playShot();
+
 		IShip ship = myFleet.shipAt(pos);
-		if (ship == null)
+
+		if (ship == null) {
+			soundManager.playMiss();
 			return new ShotResult(true, false, null, false);
+		}
 		else
 		{
 			ship.shoot(pos);
 			countHits++;
+
 			if (!ship.stillFloating()) {
 				countSinks++;
+				soundManager.playSunk();
+			} else {
+				soundManager.playHit();
 			}
+
 			return new ShotResult(true, false, ship, !ship.stillFloating());
 		}
 	}
@@ -447,9 +447,11 @@ public class Game implements IGame
 	}
 
 	public void over() {
-			System.out.println();
-			System.out.println("+--------------------------------------------------------------+");
-			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
-			System.out.println("+--------------------------------------------------------------+");
+		System.out.println();
+		System.out.println("+--------------------------------------------------------------+");
+		System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
+		System.out.println("+--------------------------------------------------------------+");
+
+		soundManager.close();
 	}
 }

@@ -133,6 +133,12 @@
 			<version>${jetbrains.annotations.version}</version>
 			<scope>compile</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.adonax</groupId>
+			<artifactId>audiocue</artifactId>
+			<version>2.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
