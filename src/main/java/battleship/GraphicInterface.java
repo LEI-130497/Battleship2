@@ -6,27 +6,63 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
+import javafx.application.Platform;
 
 public class GraphicInterface extends Application {
 
-    private GridPane grid;
+    public static GridPane grid;
     private Stage stage;
+    private static GraphicInterface instance;
+
+    public GraphicInterface() {
+        super();
+        instance = this;
+    }
+
+    public static void mainLaunch()
+    {
+        Thread thread = new Thread(() -> {
+            Platform.setImplicitExit(false);
+            Application.launch(GraphicInterface.class);
+        });
+
+        thread.start();
+    }
+
+    public static GraphicInterface getInstance() {
+        return instance;
+    }
+
 
     @Override
     public void start(Stage stage) {
         this.stage = stage;
 
-        grid.setHgap(30);
-        grid.setVgap(30);
+        stage.setOnCloseRequest(event -> {
+            event.consume();
+            this.stage.hide();
+        });
     }
 
-    public void showPositions(char[][] map)
+    public void showScene()
     {
-        this.grid = new GridPane();
+        Scene scene = new Scene(GraphicInterface.grid, 750, 750);
+
+        this.stage.setScene(scene);
+        this.stage.setTitle("Visualização");
+        this.stage.show();
+    }
+
+    public void showBoard(char[][] map)
+    {
+        GraphicInterface.grid = new GridPane();
+        GraphicInterface.grid.setHgap(10);
+        GraphicInterface.grid.setVgap(10);
+
         Circle circle;
         for (int row = 0; row < Game.BOARD_SIZE; row++) {
             for (int col = 0; col < Game.BOARD_SIZE; col++) {
-                circle = new Circle();
+                circle = new Circle(30);
                 switch (map[row][col]) {
                     case Game.EMPTY_MARKER:
                         circle.setFill(Color.WHITE);
@@ -44,14 +80,10 @@ public class GraphicInterface extends Application {
                         circle.setFill(Color.YELLOW);
                         break;
                 }
-                this.grid.add(circle, col, row);
+                circle.setStroke(Color.BLACK);
+                GraphicInterface.grid.add(circle, col, row);
             }
         }
-
-        Scene scene = new Scene(grid, 350, 350);
-
-        stage.setScene(scene);
-        stage.setTitle("Visualização");
-        stage.show();
+        this.showScene();
     }
 }

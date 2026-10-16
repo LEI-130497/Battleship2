@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.util.*;
+import javafx.application.Platform;
 
 public class Game implements IGame
 {
@@ -46,6 +47,25 @@ public class Game implements IGame
 			System.out.println("'" + SHOT_SHIP_MARKER + "'->Tiro certeiro, '" + SHOT_WATER_MARKER + "'->Tiro na água");
 		}
 		System.out.println();
+	}
+
+	public static void printUIBoard(IFleet fleet, List<IMove> moves, boolean show_shots, boolean showLegend) {
+
+		assert fleet != null;
+		assert moves != null;
+
+		char[][] map = new char[BOARD_SIZE][BOARD_SIZE];
+
+		for (int r = 0; r < BOARD_SIZE; r++)
+			for (int c = 0; c < BOARD_SIZE; c++)
+				map[r][c] = EMPTY_MARKER;
+
+		printShips(fleet, map);
+
+		if (show_shots)
+			printBoardShots(moves, map);
+
+		Platform.runLater(() -> { GraphicInterface.getInstance().showBoard(map); });
 	}
 
 	private static void printShips(IFleet fleet, char[][] map) {
@@ -439,6 +459,11 @@ public class Game implements IGame
 	public void printMyBoard(boolean show_shots, boolean show_legend)
 	{
 		Game.printBoard(this.myFleet, this.alienMoves, show_shots, show_legend);
+	}
+
+	public void printMyUIBoard(boolean show_shots, boolean show_legend)
+	{
+		Game.printUIBoard(this.myFleet, this.alienMoves, show_shots, show_legend);
 	}
 
 	public void printAlienBoard(boolean show_shots, boolean show_legend)

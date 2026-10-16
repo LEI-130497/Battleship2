@@ -6,7 +6,7 @@ package battleship;
 public class Main
 {
 	/**
-	 * Main.
+	 * Main.app
 	 *
 	 * @param args the args
 	 */
@@ -14,6 +14,7 @@ public class Main
     {
 		System.out.println("***  Battleship  ***");
 
+		GraphicInterface.mainLaunch();
 		Tasks.menu();
     }
 }
