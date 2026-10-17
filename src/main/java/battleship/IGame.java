@@ -115,6 +115,11 @@ public interface IGame
 	void printMyBoard(boolean show_shots, boolean show_legend);
 
 	/**
+	 * Print my ui board (my fleet + alien shots).
+	 */
+	void printMyUIBoard(boolean show_shots, boolean show_legend);
+
+	/**
 	 * Print the alien board (alien fleet + my shots).
 	 */
 	void printAlienBoard(boolean show_shots, boolean show_legend);

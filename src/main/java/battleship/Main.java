@@ -9,12 +9,14 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class Main
 {
 	/**
-	 * Main.
+	 * Main.app
 	 *
 	 * @param args the args
 	 */
 	public static void main(String[] args) throws java.io.IOException, UnsupportedAudioFileException, LineUnavailableException {
 		System.out.println("***  Battleship  ***");
+
+		GraphicInterface.mainLaunch();
 		Tasks.menu();
     }
 }
