@@ -10,6 +10,8 @@ module battleship {
     requires spring.boot.autoconfigure;
     requires org.apache.logging.log4j;
     requires org.jetbrains.annotations;
+    requires audiocue;
+    requires java.desktop;
 
     exports battleship;
 }
