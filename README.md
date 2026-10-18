@@ -4,6 +4,37 @@
 ![Java Version](https://img.shields.io/badge/Java-17%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+# AI training and video
+
+Prompt:
+
+Considere agora a seguinte tática de geração de rajadas de tiros.
+• Crie um Diário de Bordo com o registo de cada rajada disparada, numerando-as sequencialmente (Rajada 1, 2, 3...). Guarde as coordenadas exatas de cada tiro e o
+respetivo resultado (Água, Nau atingida, Barca afundada, etc.). A memória é a principal arma de um bom estratega.
+• Não dispare fora dos limites do mapa (ex: Z99) nem repita tiros em coordenadas
+já testadas. A única exceção para este desperdício de pólvora é a última rajada do
+jogo, apenas para perfazer os 3 tiros obrigatórios quando a frota inimiga já estiver
+irremediavelmente no fundo do mar.
+• Se atingir um navio numa rajada, dispare nas posições contíguas (Norte, Sul, Este,
+Oeste) na jogada seguinte para descobrir a orientação da embarcação e acabar de a
+afundar. No entanto, se a rajada anterior confirmar que o navio já foi afundado, não
+dispare para as posições contíguas, pois os navios nunca estão encostados.
+• Como as Caravelas, Naus e Fragatas são linhas retas, um tiro certeiro significa que o
+resto do navio está na horizontal ou na vertical. Como os navios não se podem tocar
+(nem sequer nos cantos), as posições diagonais a um tiro certeiro são garantidamente
+água (a única exceção é o corpo do Galeão, devido à sua forma em T). Evitar estas
+diagonais poupa imensos tiros.
+• Quando o relatório de uma rajada confirmar que um navio foi afundado (ex: Fragata de
+4 posições), analise os dados do seu Diário de Bordo para identificar exatamente onde
+caíram esses 4 tiros. Confirmada a posição exata da carcaça, marque todas as quadrículas adjacentes (o halo de 1 posição em redor do navio) como água intransitável.
+É impossível haver outra embarcação nesse perímetro.
+• Se a sua frota for toda afundada, declare a derrota com honra. Em contrapartida, seja
+um vencedor magnânimo se for o inimigo a render-se com os navios todos no fundo
+do oceano!
+Não avalie as posições possíveis de cada embarcação isoladamente. Considere simultaneamente todas as embarcações restantes, eliminando configurações que impossibilitem o posicionamento das outras. Uma configuração só deve ser considerada válida se for compatível com toda a frota.
+
+Video: https://youtu.be/maLtJXXMKnE
+
 > A modern take on the classic naval warfare game, designed for the XVII century setting with updated software engineering patterns.
 
 ---
