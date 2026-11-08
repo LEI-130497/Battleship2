@@ -30,6 +30,27 @@ jobs:
           args: >-
             --linter qodana-jvm-community
             --config qodana-130497.yaml
+          pr-mode: false
           upload-result: true
           use-annotations: true
           post-pr-comment: true
+
+      - name: Listar instancias do cheiro (ficheiro e linha)
+        if: always()
+        run: |
+          SARIF=$(find "${{ runner.temp }}" -name qodana.sarif.json | head -n 1)
+          echo "SARIF encontrado em: $SARIF"
+          if [ -z "$SARIF" ]; then echo "Sem SARIF"; exit 0; fi
+
+          {
+            echo "### Instancias do cheiro Long Method"
+            echo ""
+            echo "| Inspecao | Ficheiro | Linha | Mensagem |"
+            echo "|---|---|---|---|"
+            jq -r '.runs[0].results[] |
+              "| \(.ruleId) | \(.locations[0].physicalLocation.artifactLocation.uri) | \(.locations[0].physicalLocation.region.startLine) | \(.message.text | gsub("\n";" ")) |"' "$SARIF"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # anotacoes diretamente nas linhas do codigo
+          jq -r '.runs[0].results[] |
+            "::warning file=\(.locations[0].physicalLocation.artifactLocation.uri),line=\(.locations[0].physicalLocation.region.startLine),title=\(.ruleId)::\(.message.text | gsub("\n";" "))"' "$SARIF"
