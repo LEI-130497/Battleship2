@@ -45,6 +45,8 @@ public class SoundManager {
     /** Duration of the sunk sound, in milliseconds. */
     private final long sunkDuration;
 
+    private final String SEPARATOR = "------------------------";
+
     /**
      * Queue containing the sound effects waiting to be played.
      */
@@ -196,96 +198,44 @@ public class SoundManager {
         hit.close();
         sunk.close();
     }
-
-   public String buildGameReport() {
-       String separator = "------------------------";
-       StringBuilder report = new StringBuilder();
-       report.append("BattleShip2 - Game Report").append("\n");
-       report.append(separator).append("\n");
-       String name1 = "Player 1";
-       int shots1 = 25;
-       int hits1 = 12;
-       int sunk1 = 3;
-       int misses1 = shots1 - hits1;
-       double accuracy1 = (double) hits1 / shots1;
-       int score1 = hits1 * 10 + sunk1 * 50;
-       report.append(name1).append("\n");
-       report.append("Shots: ").append(shots1).append("\n");
-       report.append("Hits: ").append(hits1).append("\n");
-       report.append("Misses: ").append(misses1).append("\n");
-       report.append("Ships sunk: ").append(sunk1).append("\n");
-       report.append("Accuracy: ").append(accuracy1).append("\n");
-       report.append("Score: ").append(score1).append("\n");
-       report.append(separator).append("\n");
-       String name2 = "Player 2";
-       int shots2 = 30;
-       int hits2 = 9;
-       int sunk2 = 2;
-       int misses2 = shots2 - hits2;
-       double accuracy2 = (double) hits2 / shots2;
-       int score2 = hits2 * 10 + sunk2 * 50;
-       report.append(name2).append("\n");
-       report.append("Shots: ").append(shots2).append("\n");
-       report.append("Hits: ").append(hits2).append("\n");
-       report.append("Misses: ").append(misses2).append("\n");
-       report.append("Ships sunk: ").append(sunk2).append("\n");
-       report.append("Accuracy: ").append(accuracy2).append("\n");
-       report.append("Score: ").append(score2).append("\n");
-       report.append(separator).append("\n");
-       String name3 = "Player 3";
-       int shots3 = 20;
-       int hits3 = 8;
-       int sunk3 = 1;
-       int misses3 = shots3 - hits3;
-       double accuracy3 = (double) hits3 / shots3;
-       int score3 = hits3 * 10 + sunk3 * 50;
-       report.append(name3).append("\n");
-       report.append("Shots: ").append(shots3).append("\n");
-       report.append("Hits: ").append(hits3).append("\n");
-       report.append("Misses: ").append(misses3).append("\n");
-       report.append("Ships sunk: ").append(sunk3).append("\n");
-       report.append("Accuracy: ").append(accuracy3).append("\n");
-       report.append("Score: ").append(score3).append("\n");
-       report.append(separator).append("\n");
-       String name4 = "Player 4";
-       int shots4 = 18;
-       int hits4 = 10;
-       int sunk4 = 4;
-       int misses4 = shots4 - hits4;
-       double accuracy4 = (double) hits4 / shots4;
-       int score4 = hits4 * 10 + sunk4 * 50;
-       report.append(name4).append("\n");
-       report.append("Shots: ").append(shots4).append("\n");
-       report.append("Hits: ").append(hits4).append("\n");
-       report.append("Misses: ").append(misses4).append("\n");
-       report.append("Ships sunk: ").append(sunk4).append("\n");
-       report.append("Accuracy: ").append(accuracy4).append("\n");
-       report.append("Score: ").append(score4).append("\n");
-       report.append(separator).append("\n");
-       String name5 = "Player 5";
-       int shots5 = 22;
-       int hits5 = 7;
-       int sunk5 = 2;
-       int misses5 = shots5 - hits5;
-       double accuracy5 = (double) hits5 / shots5;
-       int score5 = hits5 * 10 + sunk5 * 50;
-       report.append(name5).append("\n");
-       report.append("Shots: ").append(shots5).append("\n");
-       report.append("Hits: ").append(hits5).append("\n");
-       report.append("Misses: ").append(misses5).append("\n");
-       report.append("Ships sunk: ").append(sunk5).append("\n");
-       report.append("Accuracy: ").append(accuracy5).append("\n");
-       report.append("Score: ").append(score5).append("\n");
-       report.append(separator).append("\n");
-       int totalShots = shots1 + shots2 + shots3 + shots4 + shots5;
-       int totalHits = hits1 + hits2 + hits3 + hits4 + hits5;
-       int totalMisses = misses1 + misses2 + misses3 + misses4 + misses5;
-       int totalSunk = sunk1 + sunk2 + sunk3 + sunk4 + sunk5;
-       report.append("Total shots: ").append(totalShots).append("\n");
-       report.append("Total hits: ").append(totalHits).append("\n");
-       report.append("Total misses: ").append(totalMisses).append("\n");
-       report.append("Total sunk: ").append(totalSunk).append("\n");
-       return report.toString();
-   }
+ 
+    public String buildGameReport() {
+        StringBuilder report = new StringBuilder();
+        report.append("BattleShip2 - Game Report").append("\n");
+        report.append(SEPARATOR).append("\n");
+        int[] totals = new int[4];
+        appendPlayer(report, "Player 1", 25, 12, 3, totals);
+        appendPlayer(report, "Player 2", 30, 9, 2, totals);
+        appendPlayer(report, "Player 3", 20, 8, 1, totals);
+        appendPlayer(report, "Player 4", 18, 10, 4, totals);
+        appendPlayer(report, "Player 5", 22, 7, 2, totals);
+        appendTotals(report, totals);
+        return report.toString();
+    }
+ 
+    private void appendPlayer(StringBuilder report, String name, int shots, int hits, int sunk, int[] totals) {
+        int misses = shots - hits;
+        double accuracy = (double) hits / shots;
+        int score = hits * 10 + sunk * 50;
+        report.append(name).append("\n");
+        report.append("Shots: ").append(shots).append("\n");
+        report.append("Hits: ").append(hits).append("\n");
+        report.append("Misses: ").append(misses).append("\n");
+        report.append("Ships sunk: ").append(sunk).append("\n");
+        report.append("Accuracy: ").append(accuracy).append("\n");
+        report.append("Score: ").append(score).append("\n");
+        report.append(SEPARATOR).append("\n");
+        totals[0] += shots;
+        totals[1] += hits;
+        totals[2] += misses;
+        totals[3] += sunk;
+    }
+ 
+    private void appendTotals(StringBuilder report, int[] totals) {
+        report.append("Total shots: ").append(totals[0]).append("\n");
+        report.append("Total hits: ").append(totals[1]).append("\n");
+        report.append("Total misses: ").append(totals[2]).append("\n");
+        report.append("Total sunk: ").append(totals[3]).append("\n");
+    }
 
 }
