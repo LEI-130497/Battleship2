@@ -19,4 +19,4 @@ inspections:
     enabled: true
     severity: WARNING
     options:
-      m_limit: 4
+      m_limit: 5
