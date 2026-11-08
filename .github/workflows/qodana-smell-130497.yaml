@@ -30,3 +30,6 @@ jobs:
           args: >-
             --linter qodana-jvm-community
             --config qodana-130497.yaml
+          upload-result: true
+          use-annotations: true
+          post-pr-comment: true
