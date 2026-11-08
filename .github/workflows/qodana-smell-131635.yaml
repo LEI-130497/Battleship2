@@ -29,7 +29,7 @@ jobs:
         with:
           args: >-
             --linter qodana-jvm-community
-            --config qodana-131497.yaml
+            --config qodana-131635.yaml
           pr-mode: false
           use-caches: false
           upload-result: true
