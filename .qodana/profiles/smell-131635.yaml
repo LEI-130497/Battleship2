@@ -2,24 +2,26 @@
 version: "1.0"
 
 profile:
-  base:
-    name: empty
+  name: empty
 
-  inspections:
-    - inspection: ClassWithTooManyMethods
-      enabled: true
-      severity: WARNING
-      options:
-        m_limit: 15
+inspections:
+  - inspection: ClassWithTooManyMethods
+    enabled: true
+    severity: WARNING
+    options:
+      m_limit: 15
 
-    - inspection: ClassWithTooManyFields
-      enabled: true
-      severity: WARNING
-      options:
-        m_limit: 10
+  - inspection: ClassWithTooManyFields
+    enabled: true
+    severity: WARNING
+    options:
+      m_limit: 10
 
-    - inspection: OverlyComplexClass
-      enabled: true
-      severity: WARNING
-      options:
-        m_limit: 47
+  - inspection: OverlyComplexClass
+    enabled: true
+    severity: WARNING
+    options:
+      m_limit: 47
+
+failThreshold: 0
+disableSanityInspections: true
