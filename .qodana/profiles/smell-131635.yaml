@@ -1,10 +1,6 @@
 # 131635 - Antonio Santos
-
-version: "1.0"
-linter: qodana-jvm-community
-
-profile:
-  name: empty
+name: Large Class
+baseProfile: empty
 
 inspections:
   - inspection: ClassWithTooManyMethods
@@ -24,6 +20,3 @@ inspections:
     severity: WARNING
     options:
       m_limit: 47
-
-failThreshold: 0
-disableSanityInspections: true
