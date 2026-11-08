@@ -30,3 +30,4 @@ jobs:
           args: >-
             --linter qodana-jvm-community
             --config qodana-131635.yaml
+          pr-mode: false
