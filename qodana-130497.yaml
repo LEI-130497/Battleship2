@@ -1,0 +1,10 @@
+# 130497 - Nathan Calfayan
+version: "1.0"
+linter: qodana-jvm-community
+
+profile:
+  path: .qodana/profiles/smell-130497.yaml
+
+failThreshold: 0
+
+disableSanityInspections: true
