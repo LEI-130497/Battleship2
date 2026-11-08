@@ -45,6 +45,8 @@ public class SoundManager {
     /** Duration of the sunk sound, in milliseconds. */
     private final long sunkDuration;
 
+    private final String SEPARATOR = "------------------------";
+
     /**
      * Queue containing the sound effects waiting to be played.
      */
@@ -196,4 +198,44 @@ public class SoundManager {
         hit.close();
         sunk.close();
     }
+ 
+    public String buildGameReport() {
+        StringBuilder report = new StringBuilder();
+        report.append("BattleShip2 - Game Report").append("\n");
+        report.append(SEPARATOR).append("\n");
+        int[] totals = new int[4];
+        appendPlayer(report, "Player 1", 25, 12, 3, totals);
+        appendPlayer(report, "Player 2", 30, 9, 2, totals);
+        appendPlayer(report, "Player 3", 20, 8, 1, totals);
+        appendPlayer(report, "Player 4", 18, 10, 4, totals);
+        appendPlayer(report, "Player 5", 22, 7, 2, totals);
+        appendTotals(report, totals);
+        return report.toString();
+    }
+ 
+    private void appendPlayer(StringBuilder report, String name, int shots, int hits, int sunk, int[] totals) {
+        int misses = shots - hits;
+        double accuracy = (double) hits / shots;
+        int score = hits * 10 + sunk * 50;
+        report.append(name).append("\n");
+        report.append("Shots: ").append(shots).append("\n");
+        report.append("Hits: ").append(hits).append("\n");
+        report.append("Misses: ").append(misses).append("\n");
+        report.append("Ships sunk: ").append(sunk).append("\n");
+        report.append("Accuracy: ").append(accuracy).append("\n");
+        report.append("Score: ").append(score).append("\n");
+        report.append(SEPARATOR).append("\n");
+        totals[0] += shots;
+        totals[1] += hits;
+        totals[2] += misses;
+        totals[3] += sunk;
+    }
+ 
+    private void appendTotals(StringBuilder report, int[] totals) {
+        report.append("Total shots: ").append(totals[0]).append("\n");
+        report.append("Total hits: ").append(totals[1]).append("\n");
+        report.append("Total misses: ").append(totals[2]).append("\n");
+        report.append("Total sunk: ").append(totals[3]).append("\n");
+    }
+
 }
