@@ -1,5 +1,6 @@
 # 131635 - Antonio Santos
 version: "1.0"
+linter: qodana-jvm-community
 
 profile:
   name: empty
