@@ -196,4 +196,51 @@ public class SoundManager {
         hit.close();
         sunk.close();
     }
+
+    public String buildGameReport() {
+        String title = "BattleShip2 - Game Report";
+        String separator = "------------------------";
+        String playerOne = "Player 1";
+        String playerTwo = "Player 2";
+        int shotsOne = 25;
+        int shotsTwo = 30;
+        int hitsOne = 12;
+        int hitsTwo = 9;
+        int sunkOne = 3;
+        int sunkTwo = 2;
+        int missesOne = shotsOne - hitsOne;
+        int missesTwo = shotsTwo - hitsTwo;
+        double accuracyOne = (double) hitsOne / shotsOne;
+        double accuracyTwo = (double) hitsTwo / shotsTwo;
+        int scoreOne = hitsOne * 10 + sunkOne * 50;
+        int scoreTwo = hitsTwo * 10 + sunkTwo * 50;
+        int totalShots = shotsOne + shotsTwo;
+        int totalHits = hitsOne + hitsTwo;
+        int totalMisses = missesOne + missesTwo;
+        StringBuilder report = new StringBuilder();
+        report.append(title).append("\n");
+        report.append(separator).append("\n");
+        report.append(playerOne).append("\n");
+        report.append("Shots: ").append(shotsOne).append("\n");
+        report.append("Hits: ").append(hitsOne).append("\n");
+        report.append("Misses: ").append(missesOne).append("\n");
+        report.append("Ships sunk: ").append(sunkOne).append("\n");
+        report.append("Accuracy: ").append(accuracyOne).append("\n");
+        report.append("Score: ").append(scoreOne).append("\n");
+        report.append(separator).append("\n");
+        report.append(playerTwo).append("\n");
+        report.append("Shots: ").append(shotsTwo).append("\n");
+        report.append("Hits: ").append(hitsTwo).append("\n");
+        report.append("Misses: ").append(missesTwo).append("\n");
+        report.append("Ships sunk: ").append(sunkTwo).append("\n");
+        report.append("Accuracy: ").append(accuracyTwo).append("\n");
+        report.append("Score: ").append(scoreTwo).append("\n");
+        report.append(separator).append("\n");
+        report.append("Total shots: ").append(totalShots).append("\n");
+        report.append("Total hits: ").append(totalHits).append("\n");
+        report.append("Total misses: ").append(totalMisses).append("\n");
+        report.append(separator).append("\n");
+        return report.toString();
+    }
+
 }
