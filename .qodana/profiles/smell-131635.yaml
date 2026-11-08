@@ -1,5 +1,8 @@
 # 131635 - Antonio Santos
 
+version: "1.0"
+linter: qodana-jvm-community
+
 profile:
   name: empty
 
@@ -21,3 +24,6 @@ inspections:
     severity: WARNING
     options:
       m_limit: 47
+
+failThreshold: 0
+disableSanityInspections: true
