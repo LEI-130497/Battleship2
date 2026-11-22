@@ -87,7 +87,7 @@ public abstract class Ship implements IShip
 	/**
 	 * The Pos.
 	 */
-	private IPosition pos;
+	private IPosition initialPosition;
 
 	/**
 	 * The size
@@ -104,18 +104,18 @@ public abstract class Ship implements IShip
 	 *
 	 * @param category The category of ships of interest
 	 * @param bearing  The bearing of ships of interest
-	 * @param pos      The position of ships of interest
+	 * @param initialPosition      The position of ships of interest
 	 * @param size		The number of positions occupied by the ship
 	 */
-	public Ship(String category, Compass bearing, IPosition pos, int size)
+	public Ship(String category, Compass bearing, IPosition initialPosition, int size)
     {
 		this.category = Objects.requireNonNull(category, "Ship's category must not be null");
 		this.bearing = Objects.requireNonNull(bearing, "Ship's bearing must not be null");
-		this.pos = Objects.requireNonNull(pos, "Ship's position must not be null");
+		this.initialPosition = Objects.requireNonNull(initialPosition, "Ship's position must not be null");
 	
 		this.category = category;
 		this.bearing = bearing;
-		this.pos = pos;
+		this.initialPosition = initialPosition;
 		this.size = size;
 
 		positions = new ArrayList<>();
@@ -180,7 +180,7 @@ public abstract class Ship implements IShip
     @Override
     public IPosition getPosition()
     {
-	return pos;
+	return initialPosition;
     }
 
 	/**
@@ -429,7 +429,7 @@ public abstract class Ship implements IShip
 	@Override
     public String toString()
     {
-	return "[" + category + " " + bearing + " " + pos + "]";
+	return "[" + category + " " + bearing + " " + initialPosition + "]";
     }
 
 }
