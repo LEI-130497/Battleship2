@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.lang.reflect.Field;
@@ -18,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * IMPORTANT: do not invoke Platform.exit() from individual test classes.
  */
-public final class JavaFxTestExtension implements BeforeAllCallback, BeforeEachCallback {
+public final class JavaFxTestExtension implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback {
     private static final ExtensionContext.Namespace NAMESPACE =
             ExtensionContext.Namespace.create(JavaFxTestExtension.class);
 
@@ -39,6 +40,18 @@ public final class JavaFxTestExtension implements BeforeAllCallback, BeforeEachC
                 "javafx-session", key -> new Session(), Session.class);
         currentSession = session;
         session.ensureStarted();
+    }
+
+    /** Restores the launched application's singleton after any JavaFX test.
+     * Tests may construct a capturing subclass or clear the singleton in teardown.
+     */
+    @Override
+    public void afterEach(ExtensionContext context) throws Exception {
+        Session session = context.getRoot().getStore(NAMESPACE)
+                .get("javafx-session", Session.class);
+        if (session != null) {
+            session.restoreSingleton();
+        }
     }
 
     static GraphicInterface getLaunchedInstance() {
@@ -95,6 +108,14 @@ public final class JavaFxTestExtension implements BeforeAllCallback, BeforeEachC
             }
             startupFailure = "JavaFX could not start within 15 seconds (display unavailable or launcher failed)";
             Assumptions.assumeTrue(false, startupFailure);
+        }
+
+        synchronized void restoreSingleton() throws ReflectiveOperationException {
+            if (launchedInstance != null) {
+                Field singleton = GraphicInterface.class.getDeclaredField("instance");
+                singleton.setAccessible(true);
+                singleton.set(null, launchedInstance);
+            }
         }
 
         @Override
