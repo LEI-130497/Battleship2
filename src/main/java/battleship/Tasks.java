@@ -1,6 +1,7 @@
 package battleship;
 
 import java.util.Scanner;
+import java.util.function.IntConsumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,25 @@ public class Tasks {
 	private static final String STATUS = "estado";
 	private static final String SIMULA = "simula";
 	private static final String APPLICATION = "application";
+
+	/**
+	 * Pausa entre jogadas da simulação (existe para poder ser substituída nos testes).
+	 */
+	@FunctionalInterface
+	interface Pauser {
+		void pause(long millis) throws InterruptedException;
+	}
+
+	/**
+	 * Ação executada para terminar o programa. Por omissão é {@link System#exit(int)};
+	 * os testes substituem-na para o JVM não terminar.
+	 */
+	static IntConsumer exitHandler = System::exit;
+
+	/**
+	 * Pausa usada na simulação. Por omissão é {@link Thread#sleep(long)}.
+	 */
+	static Pauser pauser = Thread::sleep;
 
 	/**
 	 * This task also tests the fighting element of a round of three shots
@@ -79,7 +99,7 @@ public class Tasks {
 
 						if (game.getRemainingShips() == 0) {
 							game.over();
-							System.exit(0);
+							exitHandler.accept(0);
 						}
 					}
 					break;
@@ -90,16 +110,15 @@ public class Tasks {
 							myFleet.printStatus();
 							game.printMyBoard(true, false);
 							try {
-								Thread.sleep(3000);
+								pauser.pause(3000);
 							} catch (InterruptedException e) {
 								Thread.currentThread().interrupt(); // Best practice: restore interrupt status
 							}
 						}
 
-						if (game.getRemainingShips() == 0) {
-							game.over();
-							System.exit(0);
-						}
+						// O ciclo só termina quando já não há navios a flutuar
+						game.over();
+						exitHandler.accept(0);
 					}
 					break;
 				case TIROS:
@@ -223,10 +242,6 @@ public class Tasks {
 		if (input.matches("[A-Z]\\d+")) {
 			char column = input.charAt(0); // Extrair a coluna
 			int row = Integer.parseInt(input.substring(1)); // Extrair a linha
-			return new Position(column, row);
-		} else if (part2 != null && part1.matches("[A-Z]") && part2.matches("\\d+")) {
-			char column = part1.charAt(0); // Extrair a coluna
-			int row = Integer.parseInt(part2); // Extrair a linha
 			return new Position(column, row);
 		} else {
 			throw new IllegalArgumentException("Formato inválido. Use 'A3', 'A 3' ou similar.");

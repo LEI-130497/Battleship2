@@ -1,0 +1,349 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SoundManager</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">battleship</a>
+</div>
+
+<h1>Coverage Summary for Class: SoundManager (battleship)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SoundManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (43/43)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SoundManager$Sound</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (44/44)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;
+&nbsp;package battleship;
+&nbsp;
+&nbsp;import com.adonax.audiocue.AudioCue;
+&nbsp;
+&nbsp;import javax.sound.sampled.AudioSystem;
+&nbsp;import javax.sound.sampled.LineUnavailableException;
+&nbsp;import javax.sound.sampled.UnsupportedAudioFileException;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.concurrent.BlockingQueue;
+&nbsp;import java.util.concurrent.LinkedBlockingQueue;
+&nbsp;
+&nbsp;/**
+&nbsp; * Manages the sound effects used throughout the Battleship game.
+&nbsp; * &lt;p&gt;
+&nbsp; * This class loads and initializes audio cues for shooting, missing,
+&nbsp; * hitting a ship, and sinking a ship. Sound requests are added to a
+&nbsp; * queue and processed sequentially by a dedicated background thread.
+&nbsp; * This prevents multiple sound effects from being played simultaneously.
+&nbsp; */
+&nbsp;public class SoundManager {
+&nbsp;
+&nbsp;    /** Audio cue played when a shot is fired. */
+&nbsp;    private final AudioCue shot;
+&nbsp;
+&nbsp;    /** Audio cue played when a shot misses its target. */
+&nbsp;    private final AudioCue miss;
+&nbsp;
+&nbsp;    /** Audio cue played when a shot hits a ship. */
+&nbsp;    private final AudioCue hit;
+&nbsp;
+&nbsp;    /** Audio cue played when a ship is sunk. */
+&nbsp;    private final AudioCue sunk;
+&nbsp;
+&nbsp;    /** Duration of the shot sound, in milliseconds. */
+&nbsp;    private final long shotDuration;
+&nbsp;
+&nbsp;    /** Duration of the miss sound, in milliseconds. */
+&nbsp;    private final long missDuration;
+&nbsp;
+&nbsp;    /** Duration of the hit sound, in milliseconds. */
+&nbsp;    private final long hitDuration;
+&nbsp;
+&nbsp;    /** Duration of the sunk sound, in milliseconds. */
+&nbsp;    private final long sunkDuration;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Queue containing the sound effects waiting to be played.
+&nbsp;     */
+<b class="fc">&nbsp;    private final BlockingQueue&lt;Sound&gt; soundQueue =</b>
+&nbsp;            new LinkedBlockingQueue&lt;&gt;();
+&nbsp;
+&nbsp;    /** Indicates whether the sound-processing thread should keep running. */
+<b class="fc">&nbsp;    private volatile boolean running = true;</b>
+&nbsp;
+&nbsp;    /** Background thread responsible for processing queued sounds. */
+&nbsp;    private final Thread soundThread;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Represents a sound effect and its playback duration.
+&nbsp;     *
+&nbsp;     * @param cue the audio cue to play
+&nbsp;     * @param duration the expected playback duration, in milliseconds
+&nbsp;     */
+<b class="fc">&nbsp;    private record Sound(AudioCue cue, long duration) {}</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Initializes all sound effects and starts the background thread.
+&nbsp;     *
+&nbsp;     * @throws RuntimeException if a sound file cannot be loaded or an
+&nbsp;     *                          audio cue cannot be initialized
+&nbsp;     */
+<b class="fc">&nbsp;    public SoundManager() {</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            shotDuration = getDuration(&quot;/shot.wav&quot;);</b>
+<b class="fc">&nbsp;            missDuration = getDuration(&quot;/miss.wav&quot;);</b>
+<b class="fc">&nbsp;            hitDuration = getDuration(&quot;/hit.wav&quot;);</b>
+<b class="fc">&nbsp;            sunkDuration = getDuration(&quot;/sunk.wav&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;            shot = loadSound(&quot;/shot.wav&quot;);</b>
+<b class="fc">&nbsp;            miss = loadSound(&quot;/miss.wav&quot;);</b>
+<b class="fc">&nbsp;            hit = loadSound(&quot;/hit.wav&quot;);</b>
+<b class="fc">&nbsp;            sunk = loadSound(&quot;/sunk.wav&quot;);</b>
+&nbsp;
+&nbsp;        } catch (IOException | UnsupportedAudioFileException
+&nbsp;                 | LineUnavailableException e) {
+<b class="fc">&nbsp;            throw new RuntimeException(</b>
+&nbsp;                    &quot;Failed to initialize sound effects&quot;, e);
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        soundThread = new Thread(this::processSounds);</b>
+<b class="fc">&nbsp;        soundThread.setDaemon(true);</b>
+<b class="fc">&nbsp;        soundThread.start();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Loads an audio file from the application&#39;s resources and opens
+&nbsp;     * an audio cue for playing it.
+&nbsp;     *
+&nbsp;     * @param path the absolute resource path of the audio file
+&nbsp;     * @return the initialized audio cue
+&nbsp;     * @throws IOException if the resource cannot be found or read
+&nbsp;     * @throws UnsupportedAudioFileException if the file format is unsupported
+&nbsp;     * @throws LineUnavailableException if an audio line cannot be opened
+&nbsp;     */
+&nbsp;    private AudioCue loadSound(String path)
+&nbsp;            throws IOException, UnsupportedAudioFileException,
+&nbsp;            LineUnavailableException {
+&nbsp;
+<b class="fc">&nbsp;        URL url = getClass().getResource(path);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (url == null) {</b>
+<b class="fc">&nbsp;            throw new IOException(&quot;Sound not found: &quot; + path);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        AudioCue cue = AudioCue.makeStereoCue(url, 1);</b>
+<b class="fc">&nbsp;        cue.open();</b>
+&nbsp;
+<b class="fc">&nbsp;        return cue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Retrieves the duration of an audio resource.
+&nbsp;     *
+&nbsp;     * @param path the absolute resource path of the audio file
+&nbsp;     * @return the audio duration, in milliseconds
+&nbsp;     * @throws IOException if the resource cannot be found or read
+&nbsp;     * @throws UnsupportedAudioFileException if the file format is unsupported
+&nbsp;     */
+&nbsp;    private long getDuration(String path)
+&nbsp;            throws IOException, UnsupportedAudioFileException {
+&nbsp;
+<b class="fc">&nbsp;        URL url = getClass().getResource(path);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (url == null) {</b>
+<b class="fc">&nbsp;            throw new IOException(&quot;Sound not found: &quot; + path);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        try (var audioInput = AudioSystem.getAudioInputStream(url)) {</b>
+<b class="fc">&nbsp;            return (long) (</b>
+<b class="fc">&nbsp;                    audioInput.getFrameLength()</b>
+<b class="fc">&nbsp;                            / audioInput.getFormat().getFrameRate()</b>
+&nbsp;                            * 1000
+&nbsp;            );
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Processes queued sound effects sequentially.
+&nbsp;     * The thread waits for a sound request, plays the corresponding
+&nbsp;     * audio cue, and pauses for the sound&#39;s expected duration before
+&nbsp;     * processing the next request.
+&nbsp;     */
+&nbsp;    private void processSounds() {
+<b class="fc">&nbsp;        while (running || !soundQueue.isEmpty()) {</b>
+&nbsp;            try {
+<b class="fc">&nbsp;                Sound sound = soundQueue.take();</b>
+&nbsp;
+<b class="fc">&nbsp;                sound.cue().play();</b>
+<b class="fc">&nbsp;                Thread.sleep(sound.duration());</b>
+&nbsp;
+&nbsp;            } catch (InterruptedException e) {
+<b class="fc">&nbsp;                if (!running) {</b>
+&nbsp;                    break;
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void playShot() {
+<b class="fc">&nbsp;        soundQueue.offer(new Sound(shot, shotDuration));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void playMiss() {
+<b class="fc">&nbsp;        soundQueue.offer(new Sound(miss, missDuration));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void playHit() {
+<b class="fc">&nbsp;        soundQueue.offer(new Sound(hit, hitDuration));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void playSunk() {
+<b class="fc">&nbsp;        soundQueue.offer(new Sound(sunk, sunkDuration));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Stops the sound-processing thread and releases the audio resources.
+&nbsp;     */
+&nbsp;    public void close() {
+<b class="fc">&nbsp;        running = false;</b>
+<b class="fc">&nbsp;        soundThread.interrupt();</b>
+&nbsp;
+<b class="fc">&nbsp;        shot.close();</b>
+<b class="fc">&nbsp;        miss.close();</b>
+<b class="fc">&nbsp;        hit.close();</b>
+<b class="fc">&nbsp;        sunk.close();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-22 17:28</div>
+</div>
+</body>
+</html>
