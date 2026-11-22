@@ -344,7 +344,7 @@ import java.util.ArrayList;
 				fleet.addShip(new Barge(Compass.NORTH, new Position(1, 1)));
 				fleet.addShip(new Caravel(Compass.NORTH, new Position(4, 4)));
 
-				String out = captureOutput(() -> fleet.printShips(fleet.getShips()));
+				String out = captureOutput(() -> Fleet.printShips(fleet.getShips()));
 				assertAll(
 						() -> assertTrue(out.contains("[Barca n B2]"), "Error: expected '[Barca n B2]' but got: " + out),
 						() -> assertTrue(out.contains("[Caravela n E5]"), "Error: expected '[Caravela n E5]' but got: " + out)
@@ -355,7 +355,7 @@ import java.util.ArrayList;
 			@DisplayName("printShips2: lista null -> AssertionError")
 			void testPrintShips2() {
 				Assumptions.assumeTrue(assertionsEnabled(), "Asserts desativados (falta -ea): teste saltado.");
-				assertThrows(AssertionError.class, () -> fleet.printShips(null),
+				assertThrows(AssertionError.class, () -> Fleet.printShips(null),
 						"Error: expected AssertionError for a null list");
 			}
 

@@ -11,6 +11,13 @@ import java.util.List;
  */
 public class Fleet implements IFleet
 {
+
+	private static final String[] SHIP_TYPES = {"galeao",                           // 1 galleon
+			"fragata",                           // 1 frigate
+			"nau", "nau",                        // 2 carracks
+			"caravela", "caravela", "caravela",  // 3 caravels
+			"barca", "barca", "barca", "barca"};
+
 	/**
 	 * Creates a randomly generated fleet containing ships of various predefined types.
 	 * Each ship is assigned a random bearing and position. If a ship cannot be added
@@ -22,20 +29,12 @@ public class Fleet implements IFleet
 
 		IFleet randomFleet = new Fleet();
 
-		// Define the types of ships to be added
-		String[] shipTypes =
-					{"galeao",                           // 1 galleon
-				 	"fragata",                           // 1 frigate
- 				 	"nau", "nau",                        // 2 carracks
-					"caravela", "caravela", "caravela",  // 3 caravels
-					"barca", "barca", "barca", "barca"}; // 4 barges
-
 		int fleetSize = 0;
 
-		while (fleetSize < shipTypes.length) {
+		while (fleetSize < SHIP_TYPES.length) {
 
 			// Build the ship
-			Ship ship = Ship.buildShip(shipTypes[fleetSize], Compass.randomBearing(), Position.randomPosition());
+			Ship ship = Ship.buildShip(SHIP_TYPES[fleetSize], Compass.randomBearing(), Position.randomPosition());
 
 			// Attempt to add the ship to the fleet
 			if (randomFleet.addShip(ship)) { // buildShip nunca devolve null para estes tipos
@@ -90,7 +89,8 @@ public class Fleet implements IFleet
 		assert s != null;
 
 		boolean result = false;
-		if ((ships.size() <= FLEET_SIZE) && (s.isInsideBoard()) && (!colisionRisk(s)))
+		boolean canAdd = (ships.size() <= FLEET_SIZE) && (s.isInsideBoard()) && (!colisionRisk(s));
+	    if (canAdd)
 		{
 			ships.add(s);
 			result = true;
@@ -209,7 +209,7 @@ public class Fleet implements IFleet
 	 *
 	 * @param ships The list of ships
 	 */
-	public void printShips(List<IShip> ships)
+	public static void printShips(List<IShip> ships)
 	{
 		assert ships != null;
 
