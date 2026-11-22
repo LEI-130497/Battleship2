@@ -163,6 +163,34 @@ mvn test
 
 ---
 
+## GitHub Actions – Java CI with Maven
+
+Este projeto utiliza um workflow de **GitHub Actions** para automatizar a compilação e a execução de testes unitários através do Maven e do JUnit.
+
+O workflow, denominado **Java CI with Maven**, é executado automaticamente nas seguintes situações:
+- **Push:** sempre que são enviadas alterações para qualquer branch do repositório.
+- **Pull Request:** sempre que é criado ou atualizado um Pull Request destinado à branch `main`.
+
+### Etapas do Workflow
+
+O workflow é executado num ambiente Ubuntu (`ubuntu-latest`) e realiza as seguintes operações:
+
+1. **Checkout do repositório:** utiliza `actions/checkout@v4` para obter o código-fonte do projeto.
+2. **Configuração do Java:** utiliza `actions/setup-java@v4` para instalar o JDK 17, com a distribuição Temurin, e configurar a cache de dependências do Maven.
+3. **Compilação do projeto:** executa `mvn -B package --file pom.xml`, que compila, executa os testes configurados e gera o artefacto do projeto.
+4. **Execução dos testes unitários:** executa `mvn -B test`, permitindo validar o funcionamento do código através dos testes JUnit configurados no projeto.
+5. **Atualização do grafo de dependências:** utiliza `advanced-security/maven-dependency-submission-action` para enviar informações sobre as dependências Maven ao GitHub, contribuindo para a deteção de vulnerabilidades através do Dependabot.
+
+### Validação Automática
+
+O workflow permite verificar automaticamente se o projeto compila corretamente e se os testes unitários são concluídos com sucesso.
+
+Caso a compilação ou algum teste falhe, o job é marcado como **failed**, permitindo identificar problemas antes da integração das alterações na branch principal.
+
+Os resultados de cada execução podem ser consultados no separador **Actions** do repositório GitHub.
+
+---
+
 ## 🤝 Contributing
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create.
 
