@@ -27,6 +27,18 @@ public class Move implements IMove {
 		this.shotResults = moveResults;
 	}
 
+	/**
+	 * Creates the JSON mapper used to serialize the results of a move.
+	 * Package-private so that tests can replace it (e.g. to force a serialization error).
+	 *
+	 * @return a mapper with indented output enabled
+	 */
+	ObjectMapper createObjectMapper() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		return objectMapper;
+	}
+
 	@Override
 	public String toString() {
 		return "Move{" +
@@ -135,9 +147,8 @@ public class Move implements IMove {
 				}
 
 				if (repeatedShots > 0) {
-					if (validShots > 0) {
-						output.append(", ");
-					}
+					// Aqui validShots > 0 (o caso "só repetidos" já foi tratado acima)
+					output.append(", ");
 					output.append(repeatedShots).append(" tiro").append(repeatedShots > 1 ? "s" : "").append(" repetido").append(repeatedShots > 1 ? "s" : "");
 				}
 			}
@@ -187,8 +198,7 @@ public class Move implements IMove {
 		String jsonString;
 
 		// Serializar os tiros gerados em JSON usando a biblioteca Jackson
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		ObjectMapper objectMapper = createObjectMapper();
 
 		try {
 			jsonString = objectMapper.writeValueAsString(response);
