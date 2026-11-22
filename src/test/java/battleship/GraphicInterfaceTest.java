@@ -9,9 +9,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,12 +37,12 @@ import static org.junit.jupiter.api.Assertions.*;
  * - showScene(): 1
  * - showBoard(char[][]): 8 (two loops, five switch cases, unmatched path)
  *
- * Requires the JavaFX graphical toolkit (a display, or a configured headless
- * JavaFX environment) and Game.BOARD_SIZE > 0. mainLaunch() is run once in
- * @BeforeAll because JavaFX Application.launch() may only be called once per JVM.
- * The corresponding test verifies the launch result. Do not run this class in
- * parallel with other tests that launch another JavaFX Application.
+ * Requires a JavaFX display (or configured headless environment).
+ * JavaFxTestExtension launches the application once for both this class and
+ * GameTest, then closes it after the JUnit test plan finishes. Run these tests
+ * sequentially because they share the singleton and static GridPane.
  */
+@ExtendWith(JavaFxTestExtension.class)
 class GraphicInterfaceTest {
 
     private TestableGraphicInterface instance;
@@ -64,49 +64,12 @@ class GraphicInterfaceTest {
     }
 
     @BeforeAll
-    static void launchJavaFxOnce() throws Exception {
-        // Exercises mainLaunch() without replacing Thread or JavaFX with mocks.
-        GraphicInterface.mainLaunch();
-        Field stageField = GraphicInterface.class.getDeclaredField("stage");
-        stageField.setAccessible(true);
-
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(100);
-        while (System.nanoTime() < deadline) {
-            CountDownLatch checked = new CountDownLatch(1);
-            AtomicReference<GraphicInterface> started = new AtomicReference<>();
-
-            try {
-                Platform.runLater(() -> {
-                    try {
-                        GraphicInterface candidate = GraphicInterface.getInstance();
-                        if (candidate != null && stageField.get(candidate) != null) {
-                            started.set(candidate);
-                        }
-                    } catch (IllegalAccessException e) {
-                        // The test will fail below if the stage cannot be read.
-                    } finally {
-                        checked.countDown();
-                    }
-                });
-                if (checked.await(250, TimeUnit.MILLISECONDS)
-                        && started.get() != null) {
-                    launchedInstance = started.get();
-                    return;
-                }
-            } catch (IllegalStateException toolkitNotReady) {
-                // Application.launch() starts JavaFX on a separate thread.
-            }
-            Thread.sleep(25);
-        }
-        fail("Error: expected JavaFX to launch and initialize its Stage, but it did not");
-    }
-
-    @AfterAll
-    static void shutdownJavaFx() {
-        // mainLaunch() sets implicitExit(false), so the toolkit must be stopped.
-        if (launchedInstance != null) {
-            Platform.exit();
-        }
+    static void launchJavaFxOnce() {
+        // The shared extension starts JavaFX once across all test classes.
+        // It also arranges for the JavaFX toolkit to close at the end of the test plan.
+        launchedInstance = JavaFxTestExtension.getLaunchedInstance();
+        assertNotNull(launchedInstance,
+            "Error: expected the shared JavaFX session to have an application instance");
     }
 
     @BeforeEach

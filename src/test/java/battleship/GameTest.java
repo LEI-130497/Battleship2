@@ -5,10 +5,9 @@ import javafx.application.Platform;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -53,9 +52,6 @@ public class GameTest {
 
     private Game game;
     private IFleet fleet;
-    private static boolean fxStartedHere;
-    private static boolean fxAvailable;
-    private static Throwable fxStartupFailure;
 
     /** Captures the generated map without creating a Stage or showing a window. */
     private static final class CapturingGraphicInterface extends GraphicInterface {
@@ -77,38 +73,8 @@ public class GameTest {
         }
     }
 
-    /** JavaFX runLater requires the toolkit; it can fail on CI without a display. */
-    private static synchronized void requireJavaFx() throws InterruptedException {
-        if (fxStartupFailure != null) {
-            Assumptions.assumeTrue(false, "JavaFX display unavailable: " + fxStartupFailure);
-        }
-        if (fxAvailable) {
-            return;
-        }
-        CountDownLatch started = new CountDownLatch(1);
-        try {
-            Platform.startup(started::countDown);
-            fxStartedHere = true;
-        } catch (IllegalStateException toolkitAlreadyRunning) {
-            started.countDown();
-        } catch (RuntimeException | LinkageError unavailable) {
-            fxStartupFailure = unavailable;
-            Assumptions.assumeTrue(false, "JavaFX display unavailable: " + unavailable);
-        }
-        assertTrue(started.await(10, TimeUnit.SECONDS),
-            "Error: expected the JavaFX platform to become ready");
-        Platform.setImplicitExit(false);
-        fxAvailable = true;
-    }
-
-    @AfterAll
-    static void tearDownJavaFx() {
-        // When this test class bootstrapped JavaFX, shut it down to release its thread.
-        // JavaFX cannot be restarted after Platform.exit() in the same JVM.
-        if (fxStartedHere) {
-            Platform.exit();
-        }
-    }
+    // UI tests use the shared JavaFX JUnit extension on each test method.
+    // The JavaFX toolkit must not be shut down by this class's @AfterAll.
 
     @BeforeEach
     void setUp() {
@@ -921,9 +887,9 @@ public class GameTest {
     // The JavaFX toolkit must be initialized, even when a Stage is not opened.
     // The subclass captures showBoard's argument on the JavaFX Application Thread.
     @Test
+    @ExtendWith(JavaFxTestExtension.class)
     @DisplayName("printUIBoard1: JavaFX receives hit, miss and ship markers")
     void printUIBoard1() throws Exception {
-        requireJavaFx();
         CapturingGraphicInterface gui = new CapturingGraphicInterface();
         Ship ship = new Barge(Compass.NORTH, new Position(4, 4));
         fleet.addShip(ship);
@@ -949,9 +915,9 @@ public class GameTest {
     }
 
     @Test
+    @ExtendWith(JavaFxTestExtension.class)
     @DisplayName("printUIBoard2: hidden shots preserve the original ship and water markers")
     void printUIBoard2() throws Exception {
-        requireJavaFx();
         CapturingGraphicInterface gui = new CapturingGraphicInterface();
         Ship ship = new Barge(Compass.NORTH, new Position(4, 4));
         fleet.addShip(ship);
@@ -970,9 +936,9 @@ public class GameTest {
     }
 
     @Test
+    @ExtendWith(JavaFxTestExtension.class)
     @DisplayName("printUIBoard3: skips out-of-bounds shots and draws sunken-ship adjacency")
     void printUIBoard3() throws Exception {
-        requireJavaFx();
         CapturingGraphicInterface gui = new CapturingGraphicInterface();
         Ship ship = new Barge(Compass.NORTH, new Position(4, 4));
         fleet.addShip(ship);
@@ -987,9 +953,9 @@ public class GameTest {
     }
 
     @Test
+    @ExtendWith(JavaFxTestExtension.class)
     @DisplayName("printMyUIBoard: forwards the player's board to JavaFX")
     void printMyUIBoard() throws Exception {
-        requireJavaFx();
         CapturingGraphicInterface gui = new CapturingGraphicInterface();
         game.fireShots(threeShots());
 

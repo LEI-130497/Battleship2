@@ -1,0 +1,205 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GraphicInterface</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">battleship</a>
+</div>
+
+<h1>Coverage Summary for Class: GraphicInterface (battleship)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GraphicInterface</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (30/30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package battleship;
+&nbsp;import javafx.application.Application;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.scene.control.*;
+&nbsp;import javafx.scene.layout.GridPane;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import javafx.scene.shape.Circle;
+&nbsp;import javafx.scene.paint.Color;
+&nbsp;import javafx.application.Platform;
+&nbsp;
+&nbsp;public class GraphicInterface extends Application {
+&nbsp;
+&nbsp;    public static GridPane grid;
+&nbsp;    private Stage stage;
+&nbsp;    private static GraphicInterface instance;
+&nbsp;
+&nbsp;    public GraphicInterface() {
+<b class="fc">&nbsp;        super();</b>
+<b class="fc">&nbsp;        instance = this;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static void mainLaunch()
+&nbsp;    {
+<b class="fc">&nbsp;        Thread thread = new Thread(() -&gt; {</b>
+<b class="fc">&nbsp;            Platform.setImplicitExit(false);</b>
+<b class="fc">&nbsp;            Application.launch(GraphicInterface.class);</b>
+&nbsp;        });
+&nbsp;
+<b class="fc">&nbsp;        thread.start();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static GraphicInterface getInstance() {
+<b class="fc">&nbsp;        return instance;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void start(Stage stage) {
+<b class="fc">&nbsp;        this.stage = stage;</b>
+&nbsp;
+<b class="fc">&nbsp;        stage.setOnCloseRequest(event -&gt; {</b>
+<b class="fc">&nbsp;            event.consume();</b>
+<b class="fc">&nbsp;            this.stage.hide();</b>
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    public void showScene()
+&nbsp;    {
+<b class="fc">&nbsp;        Scene scene = new Scene(GraphicInterface.grid, 750, 750);</b>
+&nbsp;
+<b class="fc">&nbsp;        this.stage.setScene(scene);</b>
+<b class="fc">&nbsp;        this.stage.setTitle(&quot;Visualização&quot;);</b>
+<b class="fc">&nbsp;        this.stage.show();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void showBoard(char[][] map)
+&nbsp;    {
+<b class="fc">&nbsp;        GraphicInterface.grid = new GridPane();</b>
+<b class="fc">&nbsp;        GraphicInterface.grid.setHgap(10);</b>
+<b class="fc">&nbsp;        GraphicInterface.grid.setVgap(10);</b>
+&nbsp;
+&nbsp;        Circle circle;
+<b class="fc">&nbsp;        for (int row = 0; row &lt; Game.BOARD_SIZE; row++) {</b>
+<b class="fc">&nbsp;            for (int col = 0; col &lt; Game.BOARD_SIZE; col++) {</b>
+<b class="fc">&nbsp;                circle = new Circle(30);</b>
+<b class="fc">&nbsp;                switch (map[row][col]) {</b>
+&nbsp;                    case Game.EMPTY_MARKER:
+<b class="fc">&nbsp;                        circle.setFill(Color.WHITE);</b>
+&nbsp;                        break;
+&nbsp;                    case Game.SHIP_MARKER:
+<b class="fc">&nbsp;                        circle.setFill(Color.GRAY);</b>
+&nbsp;                        break;
+&nbsp;                    case Game.SHOT_SHIP_MARKER:
+<b class="fc">&nbsp;                        circle.setFill(Color.RED);</b>
+&nbsp;                        break;
+&nbsp;                    case Game.SHOT_WATER_MARKER:
+<b class="fc">&nbsp;                        circle.setFill(Color.BLUE);</b>
+&nbsp;                        break;
+&nbsp;                    case Game.SHIP_ADJACENT_MARKER:
+<b class="fc">&nbsp;                        circle.setFill(Color.YELLOW);</b>
+&nbsp;                        break;
+&nbsp;                }
+<b class="fc">&nbsp;                circle.setStroke(Color.BLACK);</b>
+<b class="fc">&nbsp;                GraphicInterface.grid.add(circle, col, row);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        this.showScene();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-22 18:34</div>
+</div>
+</body>
+</html>
