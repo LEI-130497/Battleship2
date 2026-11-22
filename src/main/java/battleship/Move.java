@@ -15,6 +15,8 @@ import java.util.*;
  */
 public class Move implements IMove {
 
+	public static final String TIRO = " tiro";
+	public static final String TIRO_SUFFIX = TIRO;
 	//-------------------------------------------------------------------
 	private final int number;
 	private final List<IPosition> shots;
@@ -115,10 +117,10 @@ public class Move implements IMove {
 			StringBuilder output = new StringBuilder();
 
 			if (validShots == 0 && repeatedShots > 0) {
-				output.append(repeatedShots).append(" tiro").append(repeatedShots > 1 ? "s" : "").append(" repetido").append(repeatedShots > 1 ? "s" : "");
+				output.append(repeatedShots).append(TIRO_SUFFIX).append(repeatedShots > 1 ? "s" : "").append(" repetido").append(repeatedShots > 1 ? "s" : "");
 			} else {
 				if (validShots > 0) {
-					output.append(validShots).append(" tiro").append(validShots > 1 ? "s" : "").append(" válido").append(validShots > 1 ? "s" : "").append(": ");
+					output.append(validShots).append(TIRO_SUFFIX).append(validShots > 1 ? "s" : "").append(" válido").append(validShots > 1 ? "s" : "").append(": ");
 				}
 
 				// Atualizar lógica para contar múltiplos barcos afundados do mesmo tipo
@@ -135,13 +137,13 @@ public class Move implements IMove {
 						String boatName = entry.getKey();
 						int hits = entry.getValue();
 						if (!sunkBoatsCount.containsKey(boatName)) {
-							output.append(hits).append(" tiro").append(hits > 1 ? "s" : "").append(" num(a) ").append(boatName).append(" + ");
+							output.append(hits).append(TIRO_SUFFIX).append(hits > 1 ? "s" : "").append(" num(a) ").append(boatName).append(" + ");
 						}
 					}
 				}
 
 				if (missedShots > 0) {
-					output.append(missedShots).append(" tiro").append(missedShots > 1 ? "s" : "").append(" na água");
+					output.append(missedShots).append(TIRO_SUFFIX).append(missedShots > 1 ? "s" : "").append(" na água");
 				} else if (!sunkBoatsCount.isEmpty() || !hitsPerBoat.isEmpty()) {
 					output.setLength(output.length() - 2); // Remover o "+" final
 				}
@@ -149,7 +151,7 @@ public class Move implements IMove {
 				if (repeatedShots > 0) {
 					// Aqui validShots > 0 (o caso "só repetidos" já foi tratado acima)
 					output.append(", ");
-					output.append(repeatedShots).append(" tiro").append(repeatedShots > 1 ? "s" : "").append(" repetido").append(repeatedShots > 1 ? "s" : "");
+					output.append(repeatedShots).append(TIRO_SUFFIX).append(repeatedShots > 1 ? "s" : "").append(" repetido").append(repeatedShots > 1 ? "s" : "");
 				}
 			}
 
@@ -158,7 +160,7 @@ public class Move implements IMove {
 				if (!output.isEmpty()) {
 					output.append(", ");
 				}
-				output.append(outsideShots).append(" tiro").append(outsideShots > 1 ? "s" : "").append(" exterior").append(outsideShots > 1 ? "es" : "");
+				output.append(outsideShots).append(TIRO_SUFFIX).append(outsideShots > 1 ? "s" : "").append(" exterior").append(outsideShots > 1 ? "es" : "");
 			}
 
 			// Imprimir na consola se verbose for true

@@ -49,7 +49,7 @@ public class Game implements IGame
 		System.out.println();
 	}
 
-	public static void printUIBoard(IFleet fleet, List<IMove> moves, boolean show_shots, boolean showLegend) {
+	public static void printUIBoard(IFleet fleet, List<IMove> moves, boolean show_shots) {
 
 		assert fleet != null;
 		assert moves != null;
@@ -462,7 +462,7 @@ public class Game implements IGame
 
 	public void printMyUIBoard(boolean show_shots, boolean show_legend)
 	{
-		Game.printUIBoard(this.myFleet, this.alienMoves, show_shots, show_legend);
+		Game.printUIBoard(this.myFleet, this.alienMoves, show_shots);
 	}
 
 	public void printAlienBoard(boolean show_shots, boolean show_legend)

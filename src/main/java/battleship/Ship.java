@@ -87,38 +87,35 @@ public abstract class Ship implements IShip
 	/**
 	 * The Pos.
 	 */
-	private IPosition pos;
+	private IPosition initialPosition;
 
 	/**
 	 * The size
 	 */
 	private Integer size;
 
-	/**
-	 * The Positions occupied by the ship.
-	 */
-	protected List<IPosition> positions;
+	private List<IPosition> positions;
 
 	/**
 	 * Create ships
 	 *
 	 * @param category The category of ships of interest
 	 * @param bearing  The bearing of ships of interest
-	 * @param pos      The position of ships of interest
+	 * @param initialPosition      The position of ships of interest
 	 * @param size		The number of positions occupied by the ship
 	 */
-	public Ship(String category, Compass bearing, IPosition pos, int size)
+	public Ship(String category, Compass bearing, IPosition initialPosition, int size)
     {
 		this.category = Objects.requireNonNull(category, "Ship's category must not be null");
 		this.bearing = Objects.requireNonNull(bearing, "Ship's bearing must not be null");
-		this.pos = Objects.requireNonNull(pos, "Ship's position must not be null");
+		this.initialPosition = Objects.requireNonNull(initialPosition, "Ship's position must not be null");
 	
 		this.category = category;
 		this.bearing = bearing;
-		this.pos = pos;
+		this.initialPosition = initialPosition;
 		this.size = size;
 
-		positions = new ArrayList<>();
+		setPositions(new ArrayList<>());
     }
 
 	/**
@@ -138,6 +135,8 @@ public abstract class Ship implements IShip
     }
 
 	/**
+	 * The Positions occupied by the ship.
+	 */ /**
 	 * Gets positions.
 	 *
 	 * @return the positions
@@ -159,8 +158,7 @@ public abstract class Ship implements IShip
 		List<IPosition> adjacentPositions = new ArrayList<IPosition>();
 		for (IPosition position : getPositions())
 		{
-			List<IPosition> adjacents = position.adjacentPositions();
-			for (IPosition adj : adjacents)
+            for (IPosition adj : position.adjacentPositions())
 				if (!getPositions().contains(adj) && !adjacentPositions.contains(adj))
 					adjacentPositions.add(adj);
 		}
@@ -180,7 +178,7 @@ public abstract class Ship implements IShip
     @Override
     public IPosition getPosition()
     {
-	return pos;
+	return initialPosition;
     }
 
 	/**
@@ -381,8 +379,9 @@ public abstract class Ship implements IShip
 	{
 		assert this != null;
 
-		return (getLeftMostPos() >= 0 && getRightMostPos() <= Game.BOARD_SIZE - 1 && getTopMostPos() >= 0
-				&& getBottomMostPos() <= Game.BOARD_SIZE - 1);
+		int maxIndex = Game.BOARD_SIZE - 1;
+		return (getLeftMostPos() >= 0 && getRightMostPos() <= maxIndex && getTopMostPos() >= 0
+				&& getBottomMostPos() <= maxIndex);
 	}
 	/**
 	 * Shoot.
@@ -429,7 +428,10 @@ public abstract class Ship implements IShip
 	@Override
     public String toString()
     {
-	return "[" + category + " " + bearing + " " + pos + "]";
+	return "[" + category + " " + bearing + " " + initialPosition + "]";
     }
 
+	public void setPositions(List<IPosition> positions) {
+		this.positions = positions;
+	}
 }

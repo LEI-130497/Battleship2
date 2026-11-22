@@ -2,6 +2,7 @@
 package battleship;
 
 import com.adonax.audiocue.AudioCue;
+import org.jetbrains.annotations.NotNull;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
@@ -108,16 +109,21 @@ public class SoundManager {
             throws IOException, UnsupportedAudioFileException,
             LineUnavailableException {
 
-        URL url = getClass().getResource(path);
-
-        if (url == null) {
-            throw new IOException("Sound not found: " + path);
-        }
+        URL url = getUrl(path);
 
         AudioCue cue = AudioCue.makeStereoCue(url, 1);
         cue.open();
 
         return cue;
+    }
+
+    private @NotNull URL getUrl(String path) throws IOException {
+        URL url = getClass().getResource(path);
+
+        if (url == null) {
+            throw new IOException("Sound not found: " + path);
+        }
+        return url;
     }
 
     /**
@@ -131,11 +137,7 @@ public class SoundManager {
     private long getDuration(String path)
             throws IOException, UnsupportedAudioFileException {
 
-        URL url = getClass().getResource(path);
-
-        if (url == null) {
-            throw new IOException("Sound not found: " + path);
-        }
+        URL url = getUrl(path);
 
         try (var audioInput = AudioSystem.getAudioInputStream(url)) {
             return (long) (
