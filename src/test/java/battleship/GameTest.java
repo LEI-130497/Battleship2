@@ -1,7 +1,6 @@
 package battleship;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import javafx.application.Platform;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -805,7 +804,7 @@ public class GameTest {
     @DisplayName("printUIBoardNullFleet: rejects null fleet before queueing JavaFX work")
     void printUIBoardNullFleet() {
         Throwable error = assertThrows(Throwable.class,
-            () -> Game.printUIBoard(null, List.of(), false, false),
+            () -> Game.printUIBoard(null, List.of(), false),
             "Error: expected a null fleet to fail");
         assertTrue(error instanceof AssertionError || error instanceof NullPointerException,
             "Error: expected AssertionError (-ea) or NullPointerException, but got " + error);
@@ -815,7 +814,7 @@ public class GameTest {
     @DisplayName("printUIBoardNullMoves: rejects null moves before queueing JavaFX work")
     void printUIBoardNullMoves() {
         Throwable error = assertThrows(Throwable.class,
-            () -> Game.printUIBoard(fleet, null, true, false),
+            () -> Game.printUIBoard(fleet, null, true),
             "Error: expected a null move list to fail");
         assertTrue(error instanceof AssertionError || error instanceof NullPointerException,
             "Error: expected AssertionError (-ea) or NullPointerException, but got " + error);
@@ -896,7 +895,7 @@ public class GameTest {
         IPosition hit = ship.getPositions().iterator().next();
         Position miss = new Position(9, 9);
 
-        Game.printUIBoard(fleet, List.of(recordedMove(List.of(hit, miss))), true, false);
+        Game.printUIBoard(fleet, List.of(recordedMove(List.of(hit, miss))), true);
         char[][] board = gui.awaitBoard();
         assertAll("Generated GUI board",
             () -> assertSame(gui, GraphicInterface.getInstance(),
@@ -924,7 +923,7 @@ public class GameTest {
         IPosition shipPosition = ship.getPositions().iterator().next();
 
         Game.printUIBoard(fleet,
-            List.of(recordedMove(List.of(shipPosition, new Position(9, 9)))), false, true);
+            List.of(recordedMove(List.of(shipPosition, new Position(9, 9)))), false);
         char[][] board = gui.awaitBoard();
         assertAll("Hidden GUI shots",
             () -> assertEquals(Game.SHIP_MARKER,
@@ -945,7 +944,7 @@ public class GameTest {
         ship.sink();
         IPosition adjacent = ship.getAdjacentPositions().iterator().next();
         Game.printUIBoard(fleet,
-            List.of(recordedMove(List.of(new Position(-1, 2), adjacent))), true, false);
+            List.of(recordedMove(List.of(new Position(-1, 2), adjacent))), true);
         char[][] board = gui.awaitBoard();
         assertEquals(Game.SHOT_WATER_MARKER,
             board[adjacent.getRow()][adjacent.getColumn()],

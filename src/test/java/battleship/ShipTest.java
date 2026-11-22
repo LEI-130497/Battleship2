@@ -47,7 +47,7 @@ public class ShipTest {
         FixtureShip(String category, Compass bearing, IPosition anchor, IPosition... occupied) {
             super(category, bearing, anchor, occupied.length);
             for (IPosition cell : occupied) {
-                positions.add(cell);
+                getPositions().add(cell);
             }
         }
     }
