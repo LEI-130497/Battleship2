@@ -105,20 +105,7 @@ public class Tasks {
 					break;
 				case SIMULA:
 					if (game != null) {
-						while (game.getRemainingShips() > 0){
-							game.randomEnemyFire();
-							myFleet.printStatus();
-							game.printMyBoard(true, false);
-							try {
-								pauser.pause(3000);
-							} catch (InterruptedException e) {
-								Thread.currentThread().interrupt(); // Best practice: restore interrupt status
-							}
-						}
-
-						// O ciclo só termina quando já não há navios a flutuar
-						game.over();
-						exitHandler.accept(0);
+						runSimulation(game, myFleet);
 					}
 					break;
 				case TIROS:
@@ -135,6 +122,23 @@ public class Tasks {
 			command = in.next();
 		}
 		System.out.println(GOODBYE_MESSAGE);
+	}
+
+	private static void runSimulation(IGame game, IFleet myFleet) {
+		while (game.getRemainingShips() > 0){
+			game.randomEnemyFire();
+			myFleet.printStatus();
+			game.printMyBoard(true, false);
+			try {
+				pauser.pause(3000);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt(); // Best practice: restore interrupt status
+			}
+		}
+
+		// O ciclo só termina quando já não há navios a flutuar
+		game.over();
+		exitHandler.accept(0);
 	}
 
 	/**
